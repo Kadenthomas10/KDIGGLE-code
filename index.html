@@ -1,1352 +1,323 @@
+
+Conversation with Gemini
+Build me a website from this spec: [T — ThingWhat it is, 82 and 0 game where you get players from different time and generations from point guard to center.
+A — AudienceWho it's for, NBA fans
+R — Requirements Give a player from every time and team and make it like a spin, lottery where you can get a player from anytime or anytime team and it spins.
+G — Guardrails not give a team or a list of players you can pick
+E — ExperienceSections in order, one accent color, exactly like the 82-0 game that is online but make it mine
+T — TestWhat "done" means]
+Give me one complete HTML file. All CSS in a <style> tag. You may link one Google Font. No frameworks, no other external files, no build step. Return only the code.
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>82-0 // VIBE CODE BASKETBALL SIMULATOR</title>
-    <!-- Google Font: JetBrains Mono -->
+    <title>82-0 Basketball Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #080913;
-            --panel-bg: rgba(16, 20, 38, 0.85);
-            --border-color: #1e2942;
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff007f;
-            --neon-green: #00ff66;
-            --neon-gold: #ffb700;
-            --neon-purple: #a855f7;
-            --text-color: #e2e8f0;
-            --text-muted: #64748b;
-            --font-family: 'JetBrains Mono', monospace;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #f97316;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            user-select: none;
         }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.08) 0%, transparent 60%),
-                radial-gradient(circle at 100% 100%, rgba(255, 0, 127, 0.05) 0%, transparent 50%),
-                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-        }
-
-        /* Scanline effect */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            z-index: 999;
-            pointer-events: none;
-            opacity: 0.6;
+            align-items: center;
+            padding: 20px;
         }
 
         header {
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(8, 9, 19, 0.9);
-            backdrop-filter: blur(10px);
-            z-index: 10;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 800;
-            font-size: 1.25rem;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-tag {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .record-badge {
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
-        }
-
-        .record-badge.streak-failed {
-            border-color: var(--neon-pink);
-            color: var(--neon-pink);
-            background: rgba(255, 0, 127, 0.1);
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-        }
-
-        .main-container {
-            display: grid;
-            grid-template-columns: 320px 1fr 340px;
-            gap: 1rem;
-            padding: 1rem;
-            flex: 1;
-            max-width: 1600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        @media (max-width: 1100px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            backdrop-filter: blur(8px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Center Arena */
-        .arena-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .scoreboard {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
             text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .team-score {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .team-name {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+        h1 {
+            font-family: 'Teko', sans-serif;
+            font-size: 4rem;
             text-transform: uppercase;
-        }
-
-        .score-num {
-            font-size: 2.75rem;
-            font-weight: 800;
-            color: #fff;
             line-height: 1;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
         }
 
-        .score-home .score-num {
-            color: var(--neon-cyan);
-            text-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        h1 span {
+            color: var(--accent-color);
         }
 
-        .score-away .score-num {
-            color: var(--neon-pink);
-            text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.5rem;
         }
 
-        .game-clock-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 1rem;
+        .controls {
+            margin-bottom: 2rem;
         }
 
-        .quarter-lbl {
-            font-size: 0.75rem;
-            color: var(--neon-gold);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .time-left {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0.25rem 0;
-        }
-
-        /* Basketball Canvas */
-        .court-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 650px;
-            aspect-ratio: 16/9;
-            background: #0d1124;
-            border: 2px solid var(--border-color);
+        .btn-spin {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            font-family: 'Teko', sans-serif;
+            font-size: 2rem;
+            padding: 0.5rem 3rem;
+            border: none;
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Controls / Simulation Buttons */
-        .sim-controls {
-            display: flex;
-            gap: 0.75rem;
-            width: 100%;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            background: rgba(30, 41, 66, 0.6);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.85rem;
-            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            flex: 1;
-            min-width: 130px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
         }
 
-        .btn:hover {
-            background: rgba(0, 243, 255, 0.15);
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
-            transform: translateY(-1px);
+        .btn-spin:hover {
+            background-color: #ea580c;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(0, 150, 255, 0.2));
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
+        .btn-spin:active {
+            transform: scale(0.98);
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.4), rgba(0, 150, 255, 0.4));
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        .btn-spin:disabled {
+            background-color: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
-        .btn-fast {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(255, 0, 127, 0.2));
-            border-color: var(--neon-purple);
-            color: #e879f9;
-        }
-
-        .btn-fast:hover {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(255, 0, 127, 0.4));
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-        }
-
-        /* Play-by-play Terminal */
-        .terminal-box {
-            background: rgba(5, 6, 12, 0.9);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.75rem;
-            font-size: 0.8rem;
-            height: 180px;
-            overflow-y: auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border-color) transparent;
-        }
-
-        .log-entry {
-            line-height: 1.4;
-            color: #94a3b8;
-            opacity: 0.9;
-            animation: fadeIn 0.2s ease-in;
-        }
-
-        .log-entry.home-action {
-            color: var(--neon-cyan);
-        }
-
-        .log-entry.away-action {
-            color: var(--neon-pink);
-        }
-
-        .log-entry.clutch {
-            color: var(--neon-gold);
-            font-weight: 700;
-        }
-
-        /* Roster / Vibe Hacks */
-        .roster-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            overflow-y: auto;
-            max-height: 380px;
-            padding-right: 0.25rem;
-        }
-
-        .player-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.6rem;
+        .roster-grid {
             display: grid;
-            grid-template-columns: 2.5rem 1fr auto;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
         }
 
-        .player-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .player-ovr {
-            width: 2.2rem;
-            height: 2.2rem;
-            border-radius: 4px;
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.85rem;
-        }
-
-        .player-info {
+        .slot-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-card.spinning {
+            border-color: var(--accent-color);
+        }
+
+        .position-label {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-display {
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
 
         .player-name {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #f1f5f9;
-        }
-
-        .player-role {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .player-stamina {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.2rem;
-            width: 60px;
-        }
-
-        .stamina-bar-bg {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .stamina-bar-fill {
-            height: 100%;
-            background: var(--neon-green);
-            transition: width 0.3s ease;
-        }
-
-        /* Vibe Tactics / Buff Buttons */
-        .vibe-tactics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
-
-        .tactic-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem;
-            border-radius: 6px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tactic-btn:hover {
-            border-color: var(--neon-gold);
-            background: rgba(255, 183, 0, 0.08);
-        }
-
-        .tactic-btn.active {
-            border-color: var(--neon-gold);
-            background: rgba(255, 183, 0, 0.15);
-            box-shadow: 0 0 10px rgba(255, 183, 0, 0.2);
-        }
-
-        .tactic-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--neon-gold);
-        }
-
-        .tactic-desc {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-top: 0.1rem;
-        }
-
-        /* Schedule Timeline */
-        .schedule-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            overflow-y: auto;
-            max-height: 450px;
-        }
-
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.5rem 0.75rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            font-size: 0.75rem;
-        }
-
-        .schedule-item.current {
-            border-color: var(--neon-cyan);
-            background: rgba(0, 243, 255, 0.05);
-        }
-
-        .schedule-item.win {
-            border-left: 3px solid var(--neon-green);
-        }
-
-        .schedule-item.loss {
-            border-left: 3px solid var(--neon-pink);
-        }
-
-        .game-num {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            width: 3.5rem;
-        }
-
-        .opp-name {
-            font-weight: 700;
-            flex: 1;
-        }
-
-        .game-result {
+            font-size: 1.25rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
         }
 
-        /* Modal Overlay for Season End */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(4, 5, 10, 0.85);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-card {
-            background: var(--panel-bg);
-            border: 2px solid var(--neon-gold);
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(255, 183, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .modal-card.failed {
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 40px rgba(255, 0, 127, 0.3);
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--neon-gold);
-            text-transform: uppercase;
-        }
-
-        .modal-card.failed .modal-title {
-            color: var(--neon-pink);
-        }
-
-        .modal-stats {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 8px;
-            padding: 1rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-val {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #fff;
-        }
-
-        .stat-lbl {
-            font-size: 0.7rem;
+        .player-meta {
+            font-size: 0.875rem;
             color: var(--text-muted);
-            text-transform: uppercase;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(2px); }
-            to { opacity: 1; transform: translateY(0); }
+        .placeholder {
+            color: var(--text-muted);
+            font-size: 2rem;
+            font-weight: bold;
         }
 
-        /* Sound Toggle */
-        .audio-toggle {
-            cursor: pointer;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+        footer {
+            margin-top: auto;
+            padding-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">
-            <span>⚡</span>
-            <span class="logo-tag">VIBE_CODE // BASKETBALL</span>
-            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">v2.5</span>
-        </div>
-        
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <button class="audio-toggle" id="audioBtn" onclick="toggleAudio()">🔊 SFX: ON</button>
-            <div class="record-badge" id="recordBadge">RECORD: 0 - 0 (GOAL: 82-0)</div>
-        </div>
+        <h1>82 <span>-</span> 0 Generator</h1>
+        <p class="subtitle">Spin to draft your random all-time lineup.</p>
     </header>
 
-    <main class="main-container">
-        <!-- LEFT PANEL: ROSTER & TACTICS -->
-        <section class="panel">
-            <div class="panel-header">
-                <span>Roster & Energy</span>
-                <span style="color: var(--neon-cyan);" id="teamRating">OVR: 96</span>
-            </div>
-
-            <div class="roster-list" id="rosterContainer">
-                <!-- Roster cards generated by JS -->
-            </div>
-
-            <div class="panel-header" style="margin-top: 0.5rem;">
-                <span>Vibe Overclocking</span>
-            </div>
-
-            <div class="vibe-tactics">
-                <div class="tactic-btn" id="tactic-pace" onclick="toggleTactic('pace')">
-                    <div class="tactic-title">⚡ High Htz Pace</div>
-                    <div class="tactic-desc">+15% Speed, -10% Stamina</div>
-                </div>
-                <div class="tactic-btn" id="tactic-defense" onclick="toggleTactic('defense')">
-                    <div class="tactic-title">🛡️ Cyber Press</div>
-                    <div class="tactic-desc">+20% Steals, +Fouls</div>
-                </div>
-                <div class="tactic-btn" id="tactic-threes" onclick="toggleTactic('threes')">
-                    <div class="tactic-title">🎯 Algorithmic 3s</div>
-                    <div class="tactic-desc">+15% 3PT Shot Arc</div>
-                </div>
-                <div class="tactic-btn" id="tactic-rest" onclick="toggleTactic('rest')">
-                    <div class="tactic-title">🔋 Load Buffer</div>
-                    <div class="tactic-desc">Regen player energy</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CENTER PANEL: GAME ARENA & CANVASES -->
-        <section class="panel arena-container">
-            <div class="scoreboard">
-                <div class="team-score score-home">
-                    <div class="team-name" id="homeTeamName">CYBER VIBERS</div>
-                    <div class="score-num" id="homeScore">0</div>
-                </div>
-
-                <div class="game-clock-box">
-                    <div class="quarter-lbl" id="gameQuarter">Q1</div>
-                    <div class="time-left" id="gameClock">12:00</div>
-                    <div style="font-size: 0.65rem; color: var(--neon-cyan);" id="gameStatus">READY</div>
-                </div>
-
-                <div class="team-score score-away">
-                    <div class="team-name" id="awayTeamName">OPPONENT</div>
-                    <div class="score-num" id="awayScore">0</div>
-                </div>
-            </div>
-
-            <!-- Court Canvas -->
-            <div class="court-wrapper">
-                <canvas id="courtCanvas" width="650" height="3655"></canvas>
-            </div>
-
-            <!-- Play Controls -->
-            <div class="sim-controls">
-                <button class="btn btn-primary" id="playBtn" onclick="togglePlayGame()">
-                    ▶ PLAY GAME
-                </button>
-                <button class="btn btn-fast" id="simNextBtn" onclick="simFastGame()">
-                    ⚡ FAST SIM (1 GAME)
-                </button>
-                <button class="btn" id="simSeasonBtn" onclick="simUntilLossOrEnd()">
-                    🚀 SIM TILL LOSS / 82-0
-                </button>
-            </div>
-
-            <!-- Terminal Feed -->
-            <div class="terminal-box" id="terminalFeed">
-                <div class="log-entry">[SYSTEM]: Season initialized. Target: 82 Wins, 0 Losses.</div>
-                <div class="log-entry">[SYSTEM]: Click "PLAY GAME" for simulated engine visual rendering or "FAST SIM".</div>
-            </div>
-        </section>
-
-        <!-- RIGHT PANEL: SEASON SCHEDULE -->
-        <section class="panel">
-            <div class="panel-header">
-                <span>82-Game Schedule</span>
-                <span id="progressLbl">0 / 82</span>
-            </div>
-
-            <div class="schedule-list" id="scheduleContainer">
-                <!-- Schedule list generated by JS -->
-            </div>
-        </section>
-    </main>
-
-    <!-- VICTORY / FAILURE MODAL -->
-    <div class="modal-overlay" id="endModal">
-        <div class="modal-card" id="modalCard">
-            <div class="modal-title" id="modalTitle">PERFECT 82-0 ACHIEVED!</div>
-            <p id="modalDesc" style="font-size: 0.9rem; color: var(--text-color);">
-                You wrote basketball history and vibes without taking a single L!
-            </p>
-            <div class="modal-stats">
-                <div class="stat-box">
-                    <div class="stat-val" id="statRecord">82 - 0</div>
-                    <div class="stat-lbl">Final Record</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-val" id="statPPG">118.4</div>
-                    <div class="stat-lbl">Avg Points/G</div>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="restartSeason()" style="width: 100%;">
-                🔄 START NEW SEASON
-            </button>
-        </div>
+    <div class="controls">
+        <button class="btn-spin" id="spinBtn" onclick="spinLottery()">Spin Roster</button>
     </div>
 
+    <main class="roster-grid">
+        <div class="slot-card" id="card-PG">
+            <div class="position-label">Point Guard</div>
+            <div class="player-display">
+                <div class="placeholder">?</div>
+            </div>
+        </div>
+
+        <div class="slot-card" id="card-SG">
+            <div class="position-label">Shooting Guard</div>
+            <div class="player-display">
+                <div class="placeholder">?</div>
+            </div>
+        </div>
+
+        <div class="slot-card" id="card-SF">
+            <div class="position-label">Small Forward</div>
+            <div class="player-display">
+                <div class="placeholder">?</div>
+            </div>
+        </div>
+
+        <div class="slot-card" id="card-PF">
+            <div class="position-label">Power Forward</div>
+            <div class="player-display">
+                <div class="placeholder">?</div>
+            </div>
+        </div>
+
+        <div class="slot-card" id="card-C">
+            <div class="position-label">Center</div>
+            <div class="player-display">
+                <div class="placeholder">?</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Draft random legends across all eras and franchises.</p>
+    </footer>
+
     <script>
-        /* ==========================================
-           AUDIO SYNTHESIZER (Web Audio API)
-           ========================================== */
-        let audioEnabled = true;
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
+        const database = {
+            PG: [
+                { name: "Magic Johnson", team: "Lakers", era: "'80s" },
+                { name: "Stephen Curry", team: "Warriors", era: "'10s" },
+                { name: "Oscar Robertson", team: "Royals", era: "'60s" },
+                { name: "Isiah Thomas", team: "Pistons", era: "'80s" },
+                { name: "John Stockton", team: "Jazz", era: "'90s" },
+                { name: "Chris Paul", team: "Hornets", era: "'00s" },
+                { name: "Steve Nash", team: "Suns", era: "'00s" },
+                { name: "Walt Frazier", team: "Knicks", era: "'70s" },
+                { name: "Damian Lillard", team: "Trail Blazers", era: "'10s" },
+                { name: "Jason Kidd", team: "Nets", era: "'00s" }
+            ],
+            SG: [
+                { name: "Michael Jordan", team: "Bulls", era: "'90s" },
+                { name: "Kobe Bryant", team: "Lakers", era: "'00s" },
+                { name: "Dwyane Wade", team: "Heat", era: "'00s" },
+                { name: "Jerry West", team: "Lakers", era: "'60s" },
+                { name: "Allen Iverson", team: "76ers", era: "'00s" },
+                { name: "James Harden", team: "Rockets", era: "'10s" },
+                { name: "Clyde Drexler", team: "Trail Blazers", era: "'90s" },
+                { name: "Ray Allen", team: "Sonic/Celtics", era: "'00s" },
+                { name: "Reggie Miller", team: "Pacers", era: "'90s" },
+                { name: "Vince Carter", team: "Raptors", era: "'00s" }
+            ],
+            SF: [
+                { name: "LeBron James", team: "Cavaliers", era: "'10s" },
+                { name: "Larry Bird", team: "Celtics", era: "'80s" },
+                { name: "Kevin Durant", team: "Thunder", era: "'10s" },
+                { name: "Julius Erving", team: "76ers", era: "'70s" },
+                { name: "Kawhi Leonard", team: "Raptors/Spurs", era: "'10s" },
+                { name: "Scottie Pippen", team: "Bulls", era: "'90s" },
+                { name: "Dominique Wilkins", team: "Hawks", era: "'80s" },
+                { name: "Elgin Baylor", team: "Lakers", era: "'60s" },
+                { name: "Carmelo Anthony", team: "Nuggets/Knicks", era: "'00s" },
+                { name: "Paul Pierce", team: "Celtics", era: "'00s" }
+            ],
+            PF: [
+                { name: "Tim Duncan", team: "Spurs", era: "'00s" },
+                { name: "Karl Malone", team: "Jazz", era: "'90s" },
+                { name: "Dirk Nowitzki", team: "Mavericks", era: "'00s" },
+                { name: "Charles Barkley", team: "Suns/76ers", era: "'90s" },
+                { name: "Giannis Antetokounmpo", team: "Bucks", era: "'20s" },
+                { name: "Kevin Garnett", team: "Timberwolves", era: "'00s" },
+                { name: "Elvin Hayes", team: "Bullets", era: "'70s" },
+                { name: "Bob Pettit", team: "Hawks", era: "'50s" },
+                { name: "Dennis Rodman", team: "Bulls/Pistons", era: "'90s" },
+                { name: "Anthony Davis", team: "Pelicans/Lakers", era: "'10s" }
+            ],
+            C: [
+                { name: "Kareem Abdul-Jabbar", team: "Lakers/Bucks", era: "'70s" },
+                { name: "Wilt Chamberlain", team: "Warriors/76ers", era: "'60s" },
+                { name: "Bill Russell", team: "Celtics", era: "'60s" },
+                { name: "Shaquille O'Neal", team: "Lakers/Magic", era: "'00s" },
+                { name: "Hakeem Olajuwon", team: "Rockets", era: "'90s" },
+                { name: "Nikola Jokic", team: "Nuggets", era: "'20s" },
+                { name: "David Robinson", team: "Spurs", era: "'90s" },
+                { name: "Patrick Ewing", team: "Knicks", era: "'90s" },
+                { name: "Moses Malone", team: "Rockets/76ers", era: "'80s" },
+                { name: "Bill Walton", team: "Trail Blazers", era: "'70s" }
+            ]
+        };
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioCtx();
-            }
-        }
+        const positions = ['PG', 'SG', 'SF', 'PF', 'C'];
 
-        function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            document.getElementById('audioBtn').innerText = audioEnabled ? "🔊 SFX: ON" : "🔇 SFX: OFF";
-        }
+        function spinLottery() {
+            const btn = document.getElementById('spinBtn');
+            btn.disabled = true;
 
-        function playBeep(freq = 440, type = 'sine', duration = 0.1, vol = 0.1) {
-            if (!audioEnabled) return;
-            initAudio();
-            try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch(e){}
-        }
+            positions.forEach((pos, index) => {
+                const card = document.getElementById(`card-${pos}`);
+                const display = card.querySelector('.player-display');
+                card.classList.add('spinning');
 
-        function playScoreSound(isThree = false) {
-            if (!audioEnabled) return;
-            initAudio();
-            if (isThree) {
-                playBeep(523.25, 'triangle', 0.08, 0.15);
-                setTimeout(() => playBeep(659.25, 'triangle', 0.08, 0.15), 80);
-                setTimeout(() => playBeep(783.99, 'triangle', 0.15, 0.2), 160);
-            } else {
-                playBeep(440, 'sine', 0.08, 0.12);
-                setTimeout(() => playBeep(554.37, 'sine', 0.1, 0.15), 70);
-            }
-        }
+                let counter = 0;
+                const maxSpins = 15 + index * 5; // Stagger the stops
+                const interval = setInterval(() => {
+                    const randomPlayer = database[pos][Math.floor(Math.random() * database[pos].length)];
+                    display.innerHTML = `
+                        <div class="player-name">${randomPlayer.name}</div>
+                        <div class="player-meta">${randomPlayer.team} • ${randomPlayer.era}</div>
+                    `;
+                    counter++;
 
-        function playBuzzerSound() {
-            if (!audioEnabled) return;
-            playBeep(120, 'sawtooth', 0.6, 0.2);
-        }
-
-        /* ==========================================
-           GAME CONSTANTS & ROSTER DATA
-           ========================================== */
-        const TEAM_NAME = "CYBER VIBERS";
-        const TOTAL_GAMES = 82;
-
-        const PLAYERS = [
-            { id: 1, name: "Neo Vance", pos: "PG", ovr: 97, 3pt: 94, dunk: 88, fatigue: 0, ppg: 0 },
-            { id: 2, name: "Jax 'Glitch' Reed", pos: "SG", ovr: 95, 3pt: 98, dunk: 82, fatigue: 0, ppg: 0 },
-            { id: 3, name: "Zion Matrix", pos: "SF", ovr: 98, 3pt: 86, dunk: 99, fatigue: 0, ppg: 0 },
-            { id: 4, name: "Kairo Byte", pos: "PF", ovr: 94, 3pt: 82, dunk: 95, fatigue: 0, ppg: 0 },
-            { id: 5, name: "Titan Hardcode", pos: "C", ovr: 96, 3pt: 70, dunk: 96, fatigue: 0, ppg: 0 },
-            { id: 6, name: "Pixel Sparks", pos: "6M", ovr: 88, 3pt: 89, dunk: 80, fatigue: 0, ppg: 0 }
-        ];
-
-        const OPPONENT_NAMES = [
-            "Quantum Rockets", "Neon Bulls", "Silicon Suns", "Binary Bucks", 
-            "Crypto Kings", "Neural Nets", "Hyper Heat", "Data Lakers", 
-            "Vapor Clippers", "Retro Celtics", "Cyber Mavericks", "Mainframe Magic"
-        ];
-
-        /* Game State Variables */
-        let seasonWins = 0;
-        let seasonLosses = 0;
-        let currentGameIndex = 0;
-        let schedule = [];
-        let activeTactics = { pace: false, defense: false, threes: false, rest: false };
-
-        // Current Active Match simulation variables
-        let isSimulatingGame = false;
-        let gameLoopInterval = null;
-        let gameClockSecs = 12 * 60;
-        let currentQuarter = 1;
-        let homeScore = 0;
-        let awayScore = 0;
-        let currentOpponent = null;
-
-        // Visual Canvas Ball Pos
-        let ballPos = { x: 325, y: 180, targetX: 325, targetY: 180, vx: 0, vy: 0, color: '#ffb700' };
-        let playersOnCourt = [];
-
-        /* ==========================================
-           INIT ENGINE
-           ========================================== */
-        window.addEventListener('DOMContentLoaded', () => {
-            generateSchedule();
-            renderRoster();
-            renderSchedule();
-            initCourtCanvas();
-            updateHeader();
-        });
-
-        function generateSchedule() {
-            schedule = [];
-            for (let i = 1; i <= TOTAL_GAMES; i++) {
-                const oppName = OPPONENT_NAMES[Math.floor(Math.random() * OPPONENT_NAMES.length)];
-                // Opponent difficulty increases slightly deeper into season
-                const difficultyBonus = Math.floor((i / 82) * 10);
-                const oppRating = Math.min(99, Math.floor(78 + Math.random() * 15 + difficultyBonus));
-                
-                schedule.push({
-                    gameNum: i,
-                    opponent: oppName,
-                    oppRating: oppRating,
-                    played: false,
-                    win: false,
-                    homeScore: 0,
-                    awayScore: 0
-                });
-            }
-        }
-
-        function updateHeader() {
-            const badge = document.getElementById('recordBadge');
-            badge.innerText = `RECORD: ${seasonWins} - ${seasonLosses} (GOAL: 82-0)`;
-            if (seasonLosses > 0) {
-                badge.classList.add('streak-failed');
-            } else {
-                badge.classList.remove('streak-failed');
-            }
-            document.getElementById('progressLbl').innerText = `${currentGameIndex} / ${TOTAL_GAMES}`;
-        }
-
-        /* ==========================================
-           ROSTER & TACTICS MANAGEMENT
-           ========================================== */
-        function renderRoster() {
-            const container = document.getElementById('rosterContainer');
-            container.innerHTML = '';
-
-            PLAYERS.forEach(p => {
-                const stamina = Math.max(10, 100 - p.fatigue);
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                card.innerHTML = `
-                    <div class="player-ovr">${p.ovr}</div>
-                    <div class="player-info">
-                        <div class="player-name">${p.name}</div>
-                        <div class="player-role">${p.pos} • 3PT: ${p.3pt} • DNK: ${p.dunk}</div>
-                    </div>
-                    <div class="player-stamina">
-                        <span style="font-size:0.65rem; color:var(--text-muted);">${stamina}% HP</span>
-                        <div class="stamina-bar-bg">
-                            <div class="stamina-bar-fill" style="width:${stamina}%; background:${stamina < 40 ? 'var(--neon-pink)' : 'var(--neon-green)'}"></div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
+                    if (counter >= maxSpins) {
+                        clearInterval(interval);
+                        card.classList.remove('spinning');
+                        if (index === positions.length - 1) {
+                            btn.disabled = false;
+                        }
+                    }
+                }, 70);
             });
-        }
-
-        function toggleTactic(tacticKey) {
-            activeTactics[tacticKey] = !activeTactics[tacticKey];
-            const btn = document.getElementById(`tactic-${tacticKey}`);
-            if (activeTactics[tacticKey]) {
-                btn.classList.add('active');
-                logTerminal(`[TACTIC ACTIVATED]: ${tacticKey.toUpperCase()} mode enabled.`, 'clutch');
-            } else {
-                btn.classList.remove('active');
-            }
-        }
-
-        function logTerminal(msg, type = '') {
-            const feed = document.getElementById('terminalFeed');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.innerText = msg;
-            feed.appendChild(entry);
-            feed.scrollTop = feed.scrollHeight;
-        }
-
-        /* ==========================================
-           SCHEDULE UI RENDER
-           ========================================== */
-        function renderSchedule() {
-            const container = document.getElementById('scheduleContainer');
-            container.innerHTML = '';
-
-            schedule.forEach((g, idx) => {
-                const item = document.createElement('div');
-                let statusClass = '';
-                if (idx === currentGameIndex && !g.played) statusClass = 'current';
-                if (g.played && g.win) statusClass = 'win';
-                if (g.played && !g.win) statusClass = 'loss';
-
-                item.className = `schedule-item ${statusClass}`;
-                
-                let resultText = `OVR ${g.oppRating}`;
-                if (g.played) {
-                    resultText = `${g.win ? 'W' : 'L'} ${g.homeScore}-${g.awayScore}`;
-                }
-
-                item.innerHTML = `
-                    <span class="game-num">G${g.gameNum}</span>
-                    <span class="opp-name">vs ${g.opponent}</span>
-                    <span class="game-result" style="color:${g.played ? (g.win ? 'var(--neon-green)' : 'var(--neon-pink)') : 'var(--text-muted)'}">
-                        ${resultText}
-                    </span>
-                `;
-                container.appendChild(item);
-            });
-
-            // Scroll current game into view
-            const activeElem = container.querySelector('.schedule-item.current');
-            if (activeElem) {
-                activeElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-
-        /* ==========================================
-           VISUAL CANVAS ENGINE
-           ========================================== */
-        let ctx;
-
-        function initCourtCanvas() {
-            const canvas = document.getElementById('courtCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Create dummy positions for visual players
-            playersOnCourt = [
-                { x: 120, y: 90, team: 'home', color: '#00f3ff' },
-                { x: 200, y: 150, team: 'home', color: '#00f3ff' },
-                { x: 180, y: 100, team: 'away', color: '#ff007f' },
-                { x: 100, y: 140, team: 'away', color: '#ff007f' }
-            ];
-
-            requestAnimationFrame(drawCourt);
-        }
-
-        function drawCourt() {
-            const width = 650;
-            const height = 365;
-
-            // Background court floor
-            ctx.fillStyle = '#0b0f1e';
-            ctx.fillRect(0, 0, width, height);
-
-            // Grid floor pattern
-            ctx.strokeStyle = 'rgba(30, 41, 66, 0.4)';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < width; x += 30) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
-            }
-            for (let y = 0; y < height; y += 30) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
-            }
-
-            // Court lines neon glowing
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)';
-            ctx.lineWidth = 2;
-
-            // Boundary
-            ctx.strokeRect(20, 20, width - 40, height - 40);
-            
-            // Half court line
-            ctx.beginPath(); ctx.moveTo(width / 2, 20); ctx.lineTo(width / 2, height - 20); ctx.stroke();
-            
-            // Center circle
-            ctx.beginPath(); ctx.arc(width / 2, height / 2, 45, 0, Math.PI * 2); ctx.stroke();
-
-            // Left 3PT Line
-            ctx.beginPath();
-            ctx.arc(20, height / 2, 110, -Math.PI / 2.3, Math.PI / 2.3);
-            ctx.stroke();
-
-            // Right 3PT Line
-            ctx.beginPath();
-            ctx.arc(width - 20, height / 2, 110, Math.PI - Math.PI / 2.3, Math.PI + Math.PI / 2.3);
-            ctx.stroke();
-
-            // Key areas
-            ctx.strokeRect(20, height / 2 - 45, 90, 90);
-            ctx.strokeRect(width - 110, height / 2 - 45, 90, 90);
-
-            // Animated ball movement
-            ballPos.x += (ballPos.targetX - ballPos.x) * 0.1;
-            ballPos.y += (ballPos.targetY - ballPos.y) * 0.1;
-
-            // Draw players
-            playersOnCourt.forEach((p, index) => {
-                // Gentle motion
-                p.x += Math.sin(Date.now() * 0.003 + index) * 0.5;
-                p.y += Math.cos(Date.now() * 0.003 + index) * 0.5;
-
-                ctx.fillStyle = p.color;
-                ctx.shadowColor = p.color;
-                ctx.shadowBlur = 8;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            });
-
-            // Draw Ball
-            ctx.fillStyle = ballPos.color;
-            ctx.shadowColor = ballPos.color;
-            ctx.shadowBlur = 12;
-            ctx.beginPath();
-            ctx.arc(ballPos.x, ballPos.y, 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            requestAnimationFrame(drawCourt);
-        }
-
-        /* Trigger ball move based on event */
-        function triggerCourtEvent(team, type) {
-            if (team === 'home') {
-                if (type === '3PT') {
-                    ballPos.targetX = 130;
-                    ballPos.targetY = 60;
-                    setTimeout(() => { ballPos.targetX = 25; ballPos.targetY = 182; }, 300);
-                } else {
-                    ballPos.targetX = 40;
-                    ballPos.targetY = 182;
-                }
-            } else {
-                if (type === '3PT') {
-                    ballPos.targetX = 520;
-                    ballPos.targetY = 300;
-                    setTimeout(() => { ballPos.targetX = 625; ballPos.targetY = 182; }, 300);
-                } else {
-                    ballPos.targetX = 610;
-                    ballPos.targetY = 182;
-                }
-            }
-        }
-
-        /* ==========================================
-           REAL-TIME GAME SIMULATION LOGIC
-           ========================================== */
-        function togglePlayGame() {
-            if (currentGameIndex >= TOTAL_GAMES) {
-                logTerminal("[SYSTEM]: Season completed!");
-                return;
-            }
-
-            const playBtn = document.getElementById('playBtn');
-
-            if (isSimulatingGame) {
-                // Pause game
-                clearInterval(gameLoopInterval);
-                isSimulatingGame = false;
-                playBtn.innerText = "▶ RESUME GAME";
-                document.getElementById('gameStatus').innerText = "PAUSED";
-            } else {
-                if (gameClockSecs <= 0 || homeScore === 0 && awayScore === 0 && currentQuarter === 1) {
-                    startNewMatch();
-                }
-                isSimulatingGame = true;
-                playBtn.innerText = "⏸ PAUSE GAME";
-                document.getElementById('gameStatus').innerText = "LIVE SIMULATION";
-                
-                // Tick fast: Every 150ms is ~20 seconds of game clock
-                gameLoopInterval = setInterval(simulateTick, 180);
-            }
-        }
-
-        function startNewMatch() {
-            currentOpponent = schedule[currentGameIndex];
-            document.getElementById('awayTeamName').innerText = currentOpponent.opponent.toUpperCase();
-            homeScore = 0;
-            awayScore = 0;
-            currentQuarter = 1;
-            gameClockSecs = 12 * 60;
-            updateScoreboard();
-            logTerminal(`[GAME START]: G${currentOpponent.gameNum} vs ${currentOpponent.opponent} (OVR ${currentOpponent.oppRating})`, 'clutch');
-        }
-
-        function updateScoreboard() {
-            document.getElementById('homeScore').innerText = homeScore;
-            document.getElementById('awayScore').innerText = awayScore;
-            document.getElementById('gameQuarter').innerText = `Q${currentQuarter}`;
-            
-            const mins = Math.floor(gameClockSecs / 60);
-            const secs = gameClockSecs % 60;
-            document.getElementById('gameClock').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        function simulateTick() {
-            // Deduct time
-            gameClockSecs -= 20;
-
-            if (gameClockSecs <= 0) {
-                if (currentQuarter < 4) {
-                    currentQuarter++;
-                    gameClockSecs = 12 * 60;
-                    logTerminal(`--- END OF QUARTER ${currentQuarter - 1} ---`);
-                    playBuzzerSound();
-                } else if (homeScore === awayScore) {
-                    // Overtime
-                    currentQuarter = "OT";
-                    gameClockSecs = 5 * 60;
-                    logTerminal(`--- OVERTIME! SCORE TIED AT ${homeScore} ---`, 'clutch');
-                    playBuzzerSound();
-                } else {
-                    // Game Finished
-                    finishCurrentGame();
-                    return;
-                }
-            }
-
-            // Simulate Possession logic
-            simulatePossession();
-            updateScoreboard();
-        }
-
-        function simulatePossession() {
-            const teamRating = 96 + (activeTactics.threes ? 2 : 0) + (activeTactics.pace ? 3 : 0);
-            const oppRating = currentOpponent.oppRating;
-
-            // Roll who takes possession
-            const homeAdvantage = 1.05;
-            const homeChance = (teamRating * homeAdvantage) / (teamRating * homeAdvantage + oppRating);
-
-            if (Math.random() < homeChance) {
-                // Home Scoring attempt
-                const player = PLAYERS[Math.floor(Math.random() * PLAYERS.length)];
-                const is3pt = activeTactics.threes ? Math.random() < 0.55 : Math.random() < 0.35;
-                const hitChance = is3pt ? (player['3pt'] / 130) : (player.ovr / 120);
-
-                if (Math.random() < hitChance) {
-                    const pts = is3pt ? 3 : 2;
-                    homeScore += pts;
-                    player.fatigue = Math.min(100, player.fatigue + (activeTactics.pace ? 2 : 1));
-                    triggerCourtEvent('home', is3pt ? '3PT' : '2PT');
-                    playScoreSound(is3pt);
-                    
-                    const flavor = is3pt ? "swishes a cyber 3-pointer!" : "dunks through the defense!";
-                    logTerminal(`${player.name} (${player.pos}) ${flavor} (+${pts})`, 'home-action');
-                }
-            } else {
-                // Opponent Scoring attempt
-                const is3pt = Math.random() < 0.35;
-                const oppHitChance = is3pt ? 0.38 : 0.48;
-
-                if (Math.random() < oppHitChance) {
-                    const pts = is3pt ? 3 : 2;
-                    awayScore += pts;
-                    triggerCourtEvent('away', is3pt ? '3PT' : '2PT');
-                    playScoreSound(false);
-
-                    logTerminal(`${currentOpponent.opponent} scores a ${pts}-point bucket.`, 'away-action');
-                }
-            }
-
-            // Fatigue recovery if rest tactic active
-            if (activeTactics.rest) {
-                PLAYERS.forEach(p => p.fatigue = Math.max(0, p.fatigue - 0.5));
-            }
-
-            renderRoster();
-        }
-
-        function finishCurrentGame() {
-            clearInterval(gameLoopInterval);
-            isSimulatingGame = false;
-            document.getElementById('playBtn').innerText = "▶ PLAY GAME";
-            document.getElementById('gameStatus').innerText = "FINAL";
-            playBuzzerSound();
-
-            const isWin = homeScore > awayScore;
-            schedule[currentGameIndex].played = true;
-            schedule[currentGameIndex].win = isWin;
-            schedule[currentGameIndex].homeScore = homeScore;
-            schedule[currentGameIndex].awayScore = awayScore;
-
-            if (isWin) {
-                seasonWins++;
-                logTerminal(`🏆 GAME ${schedule[currentGameIndex].gameNum} VICTORY: ${homeScore} - ${awayScore}`, 'clutch');
-            } else {
-                seasonLosses++;
-                logTerminal(`❌ GAME ${schedule[currentGameIndex].gameNum} DEFEAT: ${homeScore} - ${awayScore}`, 'away-action');
-            }
-
-            currentGameIndex++;
-            updateHeader();
-            renderSchedule();
-
-            // Check if streak active or season end
-            if (currentGameIndex >= TOTAL_GAMES) {
-                triggerSeasonEnd();
-            }
-        }
-
-        /* ==========================================
-           FAST SIMULATION MODES
-           ========================================== */
-        function simFastGame() {
-            if (currentGameIndex >= TOTAL_GAMES) return;
-            if (isSimulatingGame) {
-                clearInterval(gameLoopInterval);
-                isSimulatingGame = false;
-            }
-
-            const g = schedule[currentGameIndex];
-            currentOpponent = g;
-
-            // Generate realistic outcome based on stats
-            const teamRating = 96 + (activeTactics.threes ? 2 : 0);
-            const oppRating = g.oppRating;
-
-            // High probability for elite team, but realistic variance
-            let hScore = Math.floor(100 + Math.random() * 25 + (teamRating - 90));
-            let aScore = Math.floor(95 + Math.random() * 25 + (oppRating - 90));
-
-            // Ensure no ties
-            if (hScore === aScore) hScore += 2;
-
-            g.played = true;
-            g.win = hScore > aScore;
-            g.homeScore = hScore;
-            g.awayScore = aScore;
-
-            if (g.win) {
-                seasonWins++;
-                logTerminal(`⚡ FAST SIM W: G${g.gameNum} vs ${g.opponent} (${hScore}-${aScore})`, 'home-action');
-            } else {
-                seasonLosses++;
-                logTerminal(`❌ FAST SIM L: G${g.gameNum} vs ${g.opponent} (${hScore}-${aScore})`, 'away-action');
-            }
-
-            // Apply minor fatigue
-            PLAYERS.forEach(p => p.fatigue = Math.min(100, p.fatigue + Math.floor(Math.random() * 4)));
-
-            currentGameIndex++;
-            updateHeader();
-            renderSchedule();
-            renderRoster();
-
-            if (currentGameIndex >= TOTAL_GAMES || (seasonLosses > 0 && document.getElementById('recordBadge').classList.contains('streak-failed'))) {
-                if (currentGameIndex >= TOTAL_GAMES) triggerSeasonEnd();
-            }
-        }
-
-        function simUntilLossOrEnd() {
-            if (currentGameIndex >= TOTAL_GAMES) return;
-
-            let simulatedCount = 0;
-            const startWins = seasonWins;
-
-            while (currentGameIndex < TOTAL_GAMES) {
-                const prevLosses = seasonLosses;
-                simFastGame();
-                simulatedCount++;
-
-                // Stop if we take a loss (to let user adjust tactics)
-                if (seasonLosses > prevLosses) {
-                    logTerminal(`🛑 SIM STOPPED: Took 1 Loss at Game ${currentGameIndex}. Streak Broken!`, 'clutch');
-                    break;
-                }
-            }
-
-            logTerminal(`[BULK SIM COMPLETE]: Fast forwarded ${simulatedCount} games. (${seasonWins - startWins} Wins)`);
-            if (currentGameIndex >= TOTAL_GAMES) {
-                triggerSeasonEnd();
-            }
-        }
-
-        /* ==========================================
-           END GAME / SEASON RESTART
-           ========================================== */
-        function triggerSeasonEnd() {
-            const modal = document.getElementById('endModal');
-            const card = document.getElementById('modalCard');
-            const title = document.getElementById('modalTitle');
-            const desc = document.getElementById('modalDesc');
-
-            document.getElementById('statRecord').innerText = `${seasonWins} - ${seasonLosses}`;
-            
-            // Calculate avg PPG
-            let totalPts = schedule.reduce((acc, curr) => acc + curr.homeScore, 0);
-            let avg = (totalPts / Math.max(1, currentGameIndex)).toFixed(1);
-            document.getElementById('statPPG').innerText = avg;
-
-            if (seasonWins === 82 && seasonLosses === 0) {
-                card.classList.remove('failed');
-                title.innerText = "🏆 PERFECT 82-0 UNLOCKED!";
-                desc.innerText = "LEGENDBOUND! You vibe coded the greatest basketball dynasty in human history without a single loss!";
-            } else {
-                card.classList.add('failed');
-                title.innerText = "SEASON COMPLETE";
-                desc.innerText = ` You finished ${seasonWins}-${seasonLosses}. Great run, but the elusive 82-0 dream lives on!`;
-            }
-
-            modal.classList.add('active');
-        }
-
-        function restartSeason() {
-            seasonWins = 0;
-            seasonLosses = 0;
-            currentGameIndex = 0;
-            PLAYERS.forEach(p => p.fatigue = 0);
-            
-            document.getElementById('endModal').classList.remove('active');
-            generateSchedule();
-            renderRoster();
-            renderSchedule();
-            updateHeader();
-            
-            document.getElementById('homeScore').innerText = '0';
-            document.getElementById('awayScore').innerText = '0';
-            document.getElementById('gameClock').innerText = '12:00';
-            
-            logTerminal(`[SYSTEM REBOOT]: New 82-Game Season initialized. Go for 82-0!`, 'clutch');
         }
     </script>
 </body>
 </html>
+
+
+Gemini isn’t human. It can make mistakes, so double-check it.
+
